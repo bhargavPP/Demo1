@@ -1,5 +1,6 @@
 ﻿using Demo1.DbContext;
 using Demo1.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -39,28 +40,28 @@ namespace Demo1.Controllers
 
         public IActionResult Create()
         {
-            return View(ModelVM);
+            return View(SalesVM);
         }
         [HttpPost, ActionName("Create")]
         public IActionResult CreatePost()
         {
             if (!ModelState.IsValid)
             {
-                return View(ModelVM);
+                return View(SalesVM);
             }
-            _db.Models.Add(ModelVM.Model);
+            _db.SalesOrderDetail.Add(SalesVM.SalesOrderDetails);
             _db.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index2));
         }
 
         public IActionResult Edit(int Id)
         {
-            ModelVM.Model = _db.Models.Include(m => m.Make).SingleOrDefault(m => m.Id == Id);
-            if (ModelVM.Model == null)
+            SalesOrderDetails salesOrderDetails = _db.SalesOrderDetail.Include(m => m.SalesOrders).SingleOrDefault(m => m.OrderID == Id);
+            if (SalesVM.SalesOrderDetails == null)
             {
                 return NotFound();
             }
-            return View(ModelVM);
+            return View(SalesVM);
         }
         [HttpPost, ActionName("Edit")]
         public IActionResult EditPost(int Id)
@@ -68,45 +69,25 @@ namespace Demo1.Controllers
 
             if (!ModelState.IsValid)
             {
-                return View(ModelVM);
+                return View(SalesVM);
             }
-            _db.Update(ModelVM.Model);
+            _db.Update(SalesVM.SalesOrderDetails);
             _db.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index2));
         }
         [HttpPost]
         public IActionResult Delete(int Id)
         {
-            Model model = _db.Models.Find(Id);
-            if (model == null)
+            SalesOrderDetails salesOrderDetails = _db.SalesOrderDetail.Find(Id);
+            if (salesOrderDetails == null)
             {
                 return NotFound();
             }
-            _db.Models.Remove(model);
+            _db.SalesOrderDetail.Remove(salesOrderDetails);
             _db.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index2));
 
         }
-        [AllowAnonymous]
-        [HttpGet("api/models/{MakeID}")]
-        public IEnumerable<ModelResources> Models(int MakeID)
-        {
-            //return _db.Models.ToList().Where(m=>m.MakeID==MakeID);
-            //////////////Autommaper user/////////////
-            //create mapper configuration
-            var models = _db.Models.ToList().Where(m => m.MakeID == MakeID).ToList();
-            //var config = new MapperConfiguration(mc => mc.CreateMap<Model, ModelResources>());
-            //var mapper = new Mapper(config);
-
-            var modelResources = _mapper.Map<List<Model>, List<ModelResources>>(models);
-
-            return modelResources;
-            //////////////Autommaper user/////////////
-            //second method to map 
-            //var models = _db.Models.ToList();
-            //var modelResources = models.Select(m => new ModelResources { Id = m.Id, Name = m.Name }).ToList();
-
-            //return modelResources;
-        }
+         
     }
 }

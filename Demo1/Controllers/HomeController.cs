@@ -14,12 +14,12 @@ namespace Demo1.Controllers
     {
         private readonly Demo1DbContext _db;
 
-        public HomeController(Demo1DbContext db,)
+        public HomeController(Demo1DbContext db)
         {
             _db = db;
 
         }
-
+        //for inserting data to database
         public IActionResult Insert(SalesOrders sales)
         {
 
@@ -40,6 +40,7 @@ namespace Demo1.Controllers
             }
             return View(sales);
         }
+        //for Updating data to database
         public IActionResult Update(SalesOrders sales)
         {
 
@@ -60,16 +61,15 @@ namespace Demo1.Controllers
             }
             return View(sales);
         }
-
+        [HttpGet]
         public IActionResult Index()
         {
-
             return View();
         }
 
         //method that takes an integer and returns the location numeral in abbreviated form. That is, you pass in 9 and it returns “ad"
-        [HttpPost]
-        public IActionResult Method1(int InputString1)
+        //  [HttpPost]
+        public async Task<IActionResult> Method1(int InputString1)
         {
 
             int HighestPower = 0;
@@ -92,10 +92,11 @@ namespace Demo1.Controllers
             ViewData["Output1"] = new string(myArr);
             Numeral nmc = new Numeral();
             nmc.Output1 = new string(myArr);
-            return RedirectToAction("Index");
+            return View("Index");
         }
+       
         //method that takes a location numeral and returns its value as an integer. That is, you pass “ad” in, and it returns 9
-        public IActionResult Method2(string InputString2)
+        public async Task<IActionResult> Method2(string InputString2)
         {
             // double pow_ab = Math.Pow(2, InputString);
             // ViewBag.CurrentOutput = pow_ab;
@@ -106,12 +107,13 @@ namespace Demo1.Controllers
                 total += Math.Pow(2, Convert.ToInt32(asciiBytes[i] - 65));
             }
             Numeral nmc = new Numeral();
-            nmc.Output1 = total.ToString();
-            return View(nmc);
+            nmc.Output2 =(int) total;
+            ViewData["Output2"] = new string(total.ToString());
+            return View("Index");
         }
 
         //One method that takes a location numeral and returns it in abbreviated form. That is, you pass in “abbc” and it returns “ad"
-        public IActionResult Method3(string InputString3)
+        public async Task<IActionResult> Method3(string InputString3)
         {
             char temp;
 
@@ -153,7 +155,7 @@ namespace Demo1.Controllers
                 }
                 Numeral nmc = new Numeral();
                 nmc.Output3 = sortStr;
-                ViewBag.Output3 = sortStr;
+                ViewData["Output3"] = sortStr;
 
                 //if (newone != string.Empty)
                 //{
@@ -166,7 +168,7 @@ namespace Demo1.Controllers
                 //}
             }
 
-            return RedirectToAction("Index");
+            return View("Index");
         }
 
         public IActionResult Privacy()
